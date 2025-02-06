@@ -10,8 +10,8 @@ import { postWithAuth } from "@/utils/apiClient";
 import { useRouter } from "next/navigation";
 import { IoClose, IoSaveOutline } from "react-icons/io5";
 import { MdOutlineCancel } from "react-icons/md";
-import { RoleDropdownItem } from "@/types/types";
-import { fetchRoleData } from "@/utils/dataFetchFunctions";
+import { RoleDropdownItem, SectorDropdownItem } from "@/types/types";
+import { fetchRoleData, fetchSectors } from "@/utils/dataFetchFunctions";
 import ToastMessage from "@/components/common/Toast";
 import { Input } from "antd";
 
@@ -24,7 +24,7 @@ interface ValidationErrors {
   email?: string;
   password?: string;
   password_confirmation?: string;
-  role?:string;
+  role?: string;
 }
 
 
@@ -48,13 +48,17 @@ export default function AllDocTable() {
   const [toastType, setToastType] = useState<"success" | "error">("success");
   const [toastMessage, setToastMessage] = useState("");
   const [errors, setErrors] = useState<ValidationErrors>({});
-
+  const [selectedSectorId, setSelectedSectorId] = useState<string>("");
+  const [sectorDropDownData, setSectorDropDownData] = useState<
+    SectorDropdownItem[]
+  >([]);
 
   const router = useRouter();
 
 
   useEffect(() => {
     fetchRoleData(setRoleDropDownData);
+    fetchSectors(setSectorDropDownData)
   }, []);
 
   useEffect(() => {
@@ -63,6 +67,10 @@ export default function AllDocTable() {
   if (!isAuthenticated) {
     return <LoadingSpinner />;
   }
+
+  const handleSectorSelect = (sectorId: string) => {
+    setSelectedSectorId(sectorId);
+  };
 
   const handleRoleSelect = (roleId: string) => {
     const selectedRole = roleDropDownData.find(
@@ -90,26 +98,26 @@ export default function AllDocTable() {
 
   const validateFields = (): ValidationErrors => {
     const newErrors: ValidationErrors = {};
-  
+
     if (!firstName.trim()) newErrors.first_name = "First name is required.";
     if (!lastName.trim()) newErrors.last_name = "Last name is required.";
     if (!mobileNumber.trim()) newErrors.mobile_no = "Mobile number is required.";
     if (!email.trim()) newErrors.email = "Email is required.";
     if (!JSON.stringify(selectedRoleIds)) newErrors.role = "At least select one role.";
-  
+
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*_\-]).{8,}$/;
     if (!password.trim()) {
       newErrors.password = "Password is required.";
     } else if (!passwordRegex.test(password)) {
       newErrors.password = "Password must contain at least one uppercase letter, one lowercase letter, one number, one special character, and be at least 8 characters long.";
     }
-  
+
     if (password !== confirmPassword) {
       newErrors.password_confirmation = "Passwords do not match.";
     } else if (!confirmPassword.trim()) {
       newErrors.password_confirmation = "Confirm password is required.";
     }
-  
+
     return newErrors;
   };
 
@@ -121,19 +129,20 @@ export default function AllDocTable() {
       setErrors(fieldErrors);
       return;
     }
-  
+
     const formData = new FormData();
     formData.append("first_name", firstName);
     formData.append("last_name", lastName);
     formData.append("mobile_no", mobileNumber);
     formData.append("email", email);
     formData.append("password", password);
+    formData.append("sector", selectedSectorId);
     formData.append("password_confirmation", confirmPassword);
     formData.append("role", JSON.stringify(selectedRoleIds));
-  
+
     try {
       const response = await postWithAuth("add-user", formData);
-  
+
       if (response.status === "success") {
         setToastType("success");
         setToastMessage("User added successfully!");
@@ -161,12 +170,12 @@ export default function AllDocTable() {
           setShowToast(false);
         }, 5000);
       }
-  
+
     } catch (error) {
       console.error("Error submitting form:", error);
     }
   };
-  
+
 
   return (
     <>
@@ -318,6 +327,45 @@ export default function AllDocTable() {
                     ))}
                   </div>
                 </div>
+              </div>
+              <div className="col-12 col-lg-6 d-flex flex-column">
+                <p
+                  className="mb-1 text-start w-100"
+                  style={{ fontSize: "14px" }}
+                >
+                  Sectors
+                </p>
+                <DropdownButton
+                  id="dropdown-category-button"
+                  title={
+                    selectedSectorId
+                      ? sectorDropDownData.find(
+                        (item) => item.id.toString() === selectedSectorId
+                      )?.sector_name
+                      : "Select Sector"
+                  }
+                  className="custom-dropdown-text-start text-start w-100"
+                  onSelect={(value) => handleSectorSelect(value || "")}
+                >
+                  {sectorDropDownData.map((sector) => (
+                    <Dropdown.Item
+                      key={sector.id}
+                      eventKey={sector.id.toString()}
+                      style={{
+                        fontWeight:
+                          sector.parent_sector === "none"
+                            ? "bold"
+                            : "normal",
+                        paddingLeft:
+                          sector.parent_sector === "none"
+                            ? "10px"
+                            : "20px",
+                      }}
+                    >
+                      {sector.sector_name}
+                    </Dropdown.Item>
+                  ))}
+                </DropdownButton>
               </div>
             </div>
           </div>
