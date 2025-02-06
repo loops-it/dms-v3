@@ -199,14 +199,14 @@ export default function AllDocTable({ params }: Props) {
         <div className="d-flex flex-column bg-white p-2 p-lg-3 rounded mt-3">
           <div
             style={{
-              maxHeight: "380px",
+              maxHeight: "450px",
               overflowY: "auto",
               overflowX: "hidden",
             }}
             className="custom-scroll"
           >
             <div className="p-0 row row-cols-1 row-cols-md-2 w-100">
-              <div className="d-flex flex-column">
+              <div className="col-12 col-lg-6 d-flex flex-column">
                 <p className="mb-1" style={{ fontSize: "14px" }}>
                   First Name
                 </p>
@@ -220,7 +220,7 @@ export default function AllDocTable({ params }: Props) {
                   {errors.first_name && <div className="invalid-feedback">{errors.first_name}</div>}
                 </div>
               </div>
-              <div className="d-flex flex-column">
+              <div className="col-12 col-lg-6 d-flex flex-column">
                 <p className="mb-1" style={{ fontSize: "14px" }}>
                   Last Name
                 </p>
@@ -234,7 +234,7 @@ export default function AllDocTable({ params }: Props) {
                   {errors.last_name && <div className="invalid-feedback">{errors.last_name}</div>}
                 </div>
               </div>
-              <div className="d-flex flex-column">
+              <div className="col-12 col-lg-6 d-flex flex-column">
                 <p className="mb-1" style={{ fontSize: "14px" }}>
                   Mobile Number
                 </p>
@@ -248,7 +248,7 @@ export default function AllDocTable({ params }: Props) {
                   {errors.mobile_no && <div className="invalid-feedback">{errors.mobile_no}</div>}
                 </div>
               </div>
-              <div className="d-flex flex-column">
+              <div className="col-12 col-lg-6 d-flex flex-column">
                 <p className="mb-1" style={{ fontSize: "14px" }}>
                   Email
                 </p>
@@ -262,7 +262,7 @@ export default function AllDocTable({ params }: Props) {
                   {errors.email && <div className="invalid-feedback">{errors.email}</div>}
                 </div>
               </div>
-              <div className="d-flex flex-column">
+              <div className="col-12 col-lg-6 d-flex flex-column">
                 <p className="mb-1" style={{ fontSize: "14px" }}>
                   Roles
                 </p>
@@ -307,47 +307,48 @@ export default function AllDocTable({ params }: Props) {
                     })}
                   </div>
                 </div>
-
               </div>
               <div className="col-12 col-lg-6 d-flex flex-column">
-                <p
-                  className="mb-1 text-start w-100"
-                  style={{ fontSize: "14px" }}
-                >
-                  Sectors
+                <p className="mb-1" style={{ fontSize: "14px" }}>
+                  Sector
                 </p>
-                <DropdownButton
-                  id="dropdown-category-button"
-                  title={
-                    selectedSectorId
-                      ? sectorDropDownData.find(
-                        (item) => item.id.toString() === selectedSectorId
-                      )?.sector_name
-                      : "Select Sector"
-                  }
-                  className={`${errors.selectedSectorId ? "is-invalid" : ""} custom-dropdown-text-start text-start w-100`}
-                  onSelect={(value) => handleSectorSelect(value || "")}
-                >
-                  {sectorDropDownData.map((sector) => (
-                    <Dropdown.Item
-                      key={sector.id}
-                      eventKey={sector.id.toString()}
-                      style={{
-                        fontWeight:
-                          sector.parent_sector === "none"
-                            ? "bold"
-                            : "normal",
-                        paddingLeft:
-                          sector.parent_sector === "none"
-                            ? "10px"
-                            : "20px",
-                      }}
-                    >
-                      {sector.sector_name}
-                    </Dropdown.Item>
-                  ))}
-                </DropdownButton>
-                {errors.selectedSectorId && <div className="invalid-feedback">{errors.selectedSectorId}</div>}
+                <div className="mb-3 pe-lg-4">
+                  <DropdownButton
+                    id="dropdown-category-button"
+                    title={
+                      selectedSectorId
+                        ? sectorDropDownData.find(
+                          (item) => item.id.toString() === selectedSectorId
+                        )?.sector_name
+                        : "Select Sector"
+                    }
+                    className="custom-dropdown-text-start text-start w-100"
+                    onSelect={(value) => handleSectorSelect(value || "")}
+                  >
+                    {sectorDropDownData.map((sector) => (
+                      <Dropdown.Item
+                        key={sector.id}
+                        eventKey={sector.id.toString()}
+                        style={{
+                          fontWeight:
+                            sector.parent_sector === "none"
+                              ? "bold"
+                              : "normal",
+                          paddingLeft:
+                            sector.parent_sector === "none"
+                              ? "10px"
+                              : "20px",
+                        }}
+                      >
+                        {sector.sector_name}
+                      </Dropdown.Item>
+                    ))}
+                  </DropdownButton>
+
+                  {errors.selectedSectorId && (
+                    <div className="invalid-feedback">{errors.selectedSectorId}</div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
