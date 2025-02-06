@@ -25,6 +25,7 @@ interface ValidationErrors {
   password?: string;
   password_confirmation?: string;
   role?: string;
+  selectedSectorId?: string;
 }
 
 
@@ -104,6 +105,7 @@ export default function AllDocTable() {
     if (!mobileNumber.trim()) newErrors.mobile_no = "Mobile number is required.";
     if (!email.trim()) newErrors.email = "Email is required.";
     if (!JSON.stringify(selectedRoleIds)) newErrors.role = "At least select one role.";
+    if (!selectedSectorId.trim()) newErrors.selectedSectorId = "Sector is required.";
 
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*_\-]).{8,}$/;
     if (!password.trim()) {
@@ -161,6 +163,7 @@ export default function AllDocTable() {
             password: response.errors.password?.[0] || "",
             password_confirmation: response.errors.password_confirmation?.[0] || "",
             role: response.errors.role?.[0] || "",
+            selectedSectorId: response.errors.selectedSectorId?.[0] || "",
           });
         }
         setToastType("error");
@@ -293,7 +296,7 @@ export default function AllDocTable() {
                     title={
                       roles.length > 0 ? roles.join(", ") : "Select Roles"
                     }
-                    className="custom-dropdown-text-start text-start w-100"
+                    className={`${errors.role ? "is-invalid" : ""} custom-dropdown-text-start text-start w-100`}
                     onSelect={(value) => {
                       if (value) handleRoleSelect(value);
                     }}
@@ -310,6 +313,7 @@ export default function AllDocTable() {
                       </Dropdown.Item>
                     )}
                   </DropdownButton>
+                  {/* {errors.role && <div className="invalid-feedback">{errors.role}</div>} */}
                   {errors.role && <div className="invalid-feedback">{errors.role}</div>}
                   <div className="mt-1">
                     {roles.map((role, index) => (
@@ -344,7 +348,7 @@ export default function AllDocTable() {
                       )?.sector_name
                       : "Select Sector"
                   }
-                  className="custom-dropdown-text-start text-start w-100"
+                  className={`${errors.selectedSectorId ? "is-invalid" : ""} custom-dropdown-text-start text-start w-100`}
                   onSelect={(value) => handleSectorSelect(value || "")}
                 >
                   {sectorDropDownData.map((sector) => (
@@ -366,6 +370,7 @@ export default function AllDocTable() {
                     </Dropdown.Item>
                   ))}
                 </DropdownButton>
+                {errors.selectedSectorId && <div className="invalid-feedback">{errors.selectedSectorId}</div>}
               </div>
             </div>
           </div>

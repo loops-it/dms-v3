@@ -109,7 +109,7 @@ export default function AllDocTable() {
     fetchSectors(setSectorDropDownData)
   }, []);
 
-  
+
   useEffect(() => {
     // console.log("dropdown updated:", userDropDownData);
   }, [userDropDownData, roleDropDownData, categoryDropDownData]);
@@ -260,6 +260,7 @@ export default function AllDocTable() {
     if (!document) {
       validationErrors.document = "Document is required.";
     }
+    
 
     if (isTimeLimited) {
       if (!startDate) {
@@ -592,7 +593,7 @@ export default function AllDocTable() {
                     <div>
                       {metaTags.map((tag, index) => (
                         <div
-                          key={index} 
+                          key={index}
                           className="metaBorder"
                           style={{
                             display: "flex",
@@ -889,7 +890,7 @@ export default function AllDocTable() {
                 </div>
               </div>
               <div className="d-flex flex-column w-100">
-              <div className="col-12 col-lg-6 d-flex flex-column">
+                <div className="col-12 col-lg-6 d-flex flex-column">
                   <div className="d-flex w-100 flex-column justify-content-center align-items-start p-1">
                     <div className="d-flex flex-column w-100 pt-3">
                       <p
@@ -919,7 +920,7 @@ export default function AllDocTable() {
                                 sector.parent_sector === "none"
                                   ? "bold"
                                   : "normal",
-                                  paddingLeft:
+                              paddingLeft:
                                 sector.parent_sector === "none"
                                   ? "10px"
                                   : "20px",
