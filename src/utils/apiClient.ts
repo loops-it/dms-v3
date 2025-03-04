@@ -4,7 +4,7 @@ import Cookies from "js-cookie";
 
 export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ||
-  "https://sites.techvoice.lk/dms-backend-v3/api/";
+  "https://sites.techvoice.lk/dms-backend-v2/api/";
   // process.env.NEXT_PUBLIC_API_BASE_URL ||
   // "http://localhost:8000/api/";
 
@@ -144,6 +144,32 @@ export async function deleteWithAuth(endpoint: string): Promise<any> {
     return JSON.parse(rawResponse);
   } catch (error) {
     console.error("Error during GET request:", error);
+    throw error;
+  }
+}
+
+
+export async function deleteAllWithAuth(
+  endpoint: string,
+  formData: FormData
+): Promise<any> {
+  const token = Cookies.get("authToken");
+
+  try {
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token || ""}`,
+      },
+      body: formData,
+    });
+
+    const rawResponse = await response.text();
+    // console.log(rawResponse)
+
+    return JSON.parse(rawResponse);
+  } catch (error) {
+    console.error("Error during POST request:", error);
     throw error;
   }
 }

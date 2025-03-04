@@ -12,8 +12,8 @@ import { useRouter } from "next/navigation";
 import { IoClose, IoSaveOutline } from "react-icons/io5";
 import { MdOutlineCancel } from "react-icons/md";
 import ToastMessage from "@/components/common/Toast";
-import { fetchRoleData, fetchSectors } from "@/utils/dataFetchFunctions";
-import { RoleDropdownItem, SectorDropdownItem } from "@/types/types";
+import { fetchRoleData } from "@/utils/dataFetchFunctions";
+import { RoleDropdownItem } from "@/types/types";
 
 type Params = {
   id: string;
@@ -29,7 +29,6 @@ interface ValidationErrors {
   mobile_no?: string;
   email?: string;
   role?: string;
-  selectedSectorId?: string;
 }
 
 
@@ -49,10 +48,6 @@ export default function AllDocTable({ params }: Props) {
   );
   const [selectedRoleIds, setSelectedRoleIds] = useState<string[]>([]);
   const [roles, setRoles] = useState<string[]>([]);
-  const [selectedSectorId, setSelectedSectorId] = useState<string>("");
-  const [sectorDropDownData, setSectorDropDownData] = useState<
-    SectorDropdownItem[]
-  >([]);
 
 
   const router = useRouter();
@@ -61,19 +56,16 @@ export default function AllDocTable({ params }: Props) {
 
   useEffect(() => {
     fetchRoleData(setRoleDropDownData);
-    fetchSectors(setSectorDropDownData)
   }, []);
 
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
         const response = await getWithAuth(`user-details/${id}`);
-        // console.log("response   : ",response)
         setFirstName(response.user_details.first_name || "");
         setLastName(response.user_details.last_name || "");
         setMobileNumber(response.user_details.mobile_no?.toString() || "");
         setEmail(response.email || "");
-        setSelectedSectorId(response.user_details.sector || "")
         const roleIds = parseRoles(response.role);
 
         setSelectedRoleIds(roleIds);
@@ -86,10 +78,6 @@ export default function AllDocTable({ params }: Props) {
       fetchUserDetails();
     }
   }, [id]);
-
-  const handleSectorSelect = (sectorId: string) => {
-    setSelectedSectorId(sectorId);
-  };
 
   const parseRoles = (roleData: any): string[] => {
     if (typeof roleData === "string") {
@@ -146,7 +134,6 @@ export default function AllDocTable({ params }: Props) {
     if (!mobileNumber.trim()) newErrors.mobile_no = "Mobile number is required.";
     if (!email.trim()) newErrors.email = "Email is required.";
     if (!JSON.stringify(selectedRoleIds)) newErrors.role = "At least select one role.";
-    if (!selectedSectorId.trim()) newErrors.selectedSectorId = "Sector is required.";
 
     return newErrors;
   };
@@ -164,9 +151,8 @@ export default function AllDocTable({ params }: Props) {
     formData.append("mobile_no", mobileNumber);
     formData.append("email", email);
     formData.append("role", JSON.stringify(selectedRoleIds));
-    formData.append("sector", selectedSectorId);
 
-
+    
     try {
       const response = await postWithAuth(`user-details/${id}`, formData);
       if (response.status === "fail") {
@@ -198,15 +184,11 @@ export default function AllDocTable({ params }: Props) {
 
         <div className="d-flex flex-column bg-white p-2 p-lg-3 rounded mt-3">
           <div
-            style={{
-              maxHeight: "450px",
-              overflowY: "auto",
-              overflowX: "hidden",
-            }}
+            style={{ maxHeight: "380px", overflowY: "auto" }}
             className="custom-scroll"
           >
-            <div className="p-0 row row-cols-1 row-cols-md-2 w-100">
-              <div className="col-12 col-lg-6 d-flex flex-column">
+            <div className="p-0 row row-cols-1 row-cols-md-2 overflow-hidden w-100">
+              <div className="d-flex flex-column">
                 <p className="mb-1" style={{ fontSize: "14px" }}>
                   First Name
                 </p>
@@ -220,7 +202,7 @@ export default function AllDocTable({ params }: Props) {
                   {errors.first_name && <div className="invalid-feedback">{errors.first_name}</div>}
                 </div>
               </div>
-              <div className="col-12 col-lg-6 d-flex flex-column">
+              <div className="d-flex flex-column">
                 <p className="mb-1" style={{ fontSize: "14px" }}>
                   Last Name
                 </p>
@@ -234,7 +216,7 @@ export default function AllDocTable({ params }: Props) {
                   {errors.last_name && <div className="invalid-feedback">{errors.last_name}</div>}
                 </div>
               </div>
-              <div className="col-12 col-lg-6 d-flex flex-column">
+              <div className="d-flex flex-column">
                 <p className="mb-1" style={{ fontSize: "14px" }}>
                   Mobile Number
                 </p>
@@ -248,7 +230,7 @@ export default function AllDocTable({ params }: Props) {
                   {errors.mobile_no && <div className="invalid-feedback">{errors.mobile_no}</div>}
                 </div>
               </div>
-              <div className="col-12 col-lg-6 d-flex flex-column">
+              <div className="d-flex flex-column">
                 <p className="mb-1" style={{ fontSize: "14px" }}>
                   Email
                 </p>
@@ -262,7 +244,7 @@ export default function AllDocTable({ params }: Props) {
                   {errors.email && <div className="invalid-feedback">{errors.email}</div>}
                 </div>
               </div>
-              <div className="col-12 col-lg-6 d-flex flex-column">
+              <div className="d-flex flex-column">
                 <p className="mb-1" style={{ fontSize: "14px" }}>
                   Roles
                 </p>
@@ -307,49 +289,9 @@ export default function AllDocTable({ params }: Props) {
                     })}
                   </div>
                 </div>
-              </div>
-              <div className="col-12 col-lg-6 d-flex flex-column">
-                <p className="mb-1" style={{ fontSize: "14px" }}>
-                  Sector
-                </p>
-                <div className="mb-3 pe-lg-4">
-                  <DropdownButton
-                    id="dropdown-category-button"
-                    title={
-                      selectedSectorId
-                        ? sectorDropDownData.find(
-                          (item) => item.id.toString() === selectedSectorId
-                        )?.sector_name
-                        : "Select Sector"
-                    }
-                    className="custom-dropdown-text-start text-start w-100"
-                    onSelect={(value) => handleSectorSelect(value || "")}
-                  >
-                    {sectorDropDownData.map((sector) => (
-                      <Dropdown.Item
-                        key={sector.id}
-                        eventKey={sector.id.toString()}
-                        style={{
-                          fontWeight:
-                            sector.parent_sector === "none"
-                              ? "bold"
-                              : "normal",
-                          paddingLeft:
-                            sector.parent_sector === "none"
-                              ? "10px"
-                              : "20px",
-                        }}
-                      >
-                        {sector.sector_name}
-                      </Dropdown.Item>
-                    ))}
-                  </DropdownButton>
 
-                  {errors.selectedSectorId && (
-                    <div className="invalid-feedback">{errors.selectedSectorId}</div>
-                  )}
-                </div>
               </div>
+              <div className="d-flex"></div>
             </div>
           </div>
           <div className="d-flex flex-row mt-5">

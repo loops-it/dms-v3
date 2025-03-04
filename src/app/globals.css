@@ -546,6 +546,13 @@ table {
   .companyProfileTabs .tab-content {
     padding: 10px;
   }
+  .preview-image {
+    display: none !important;
+  }
+  
+  .preview-image img {
+    display: none !important;
+  }
 }
 
 @media (max-width: 768px) {
@@ -722,6 +729,8 @@ textarea:focus {
   width: auto !important;
   height: auto;
   max-width: 600px !important;
+  max-height: 600px;
+  object-fit: cover;
 }
 
 .preview-image {
@@ -874,4 +883,12 @@ iframe #WordViewerStatusBar {
 
 .table>:not(caption)>*>* {
   align-content: center !important;
+}
+
+
+.dropdown-toggle-bulk button{
+  padding: 0px !important;
+  background-color: transparent !important;
+  color: #000  !important;
+  border: none !important;
 }

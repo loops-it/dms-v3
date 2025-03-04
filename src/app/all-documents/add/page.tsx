@@ -65,6 +65,7 @@ export default function AllDocTable() {
   const [users, setUsers] = useState<string[]>([]);
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
   const [userStartDate, setUserStartDate] = useState<string>("");
+  const [userExpireDate, setUserExpireDate] = useState<string>("");
   const [userEndDate, setUserEndDate] = useState<string>("");
   const [userDownloadable, setUserDownloadable] = useState<boolean>(false);
 
@@ -235,6 +236,7 @@ export default function AllDocTable() {
     userStartDate: formatDateForSQL(userStartDate),
     userEndDate: formatDateForSQL(userEndDate),
     userDownloadable: userDownloadable ? "1" : "0",
+    expireDate: formatDateForSQL(userExpireDate),
   };
 
   // console.log("Collected Data:", collectedData);
@@ -260,7 +262,6 @@ export default function AllDocTable() {
     if (!document) {
       validationErrors.document = "Document is required.";
     }
-    
 
     if (isTimeLimited) {
       if (!startDate) {
@@ -318,6 +319,7 @@ export default function AllDocTable() {
     formData.append("is_encrypted", collectedData.isEncripted);
     formData.append("encryption_type", encriptionType);
     formData.append("attribute_data", JSON.stringify(formAttributeData));
+    formData.append("expiration_date", collectedData.expireDate);
 
     // for (const [key, value] of formData.entries()) {
     //   console.log(`${key}: ${value}`);
@@ -387,6 +389,13 @@ export default function AllDocTable() {
     }
   };
 
+  const onExpireDateTimeOk = (value: DatePickerProps['value'], dateString: string) => {
+    if (value) {
+      // console.log('onEndDateTimeOk: ', dateString);
+      setUserExpireDate(dateString);
+    }
+  };
+
   // console.log("attribute data : ", formAttributeData)
   return (
     <>
@@ -436,7 +445,6 @@ export default function AllDocTable() {
                   />
                   {errors.name && <div style={{ color: "red" }}>{errors.name}</div>}
                 </div>
-
                 <div className="col d-flex flex-column justify-content-center align-items-center p-0 ps-lg-2 px-3 px-lg-0">
                   <p
                     className="mb-1 text-start w-100"
@@ -762,7 +770,6 @@ export default function AllDocTable() {
                     </div>
                   )}
                 </div>
-
                 <div className="col-12 col-lg-6 d-flex flex-column ps-lg-2">
                   <p
                     className="mb-1 text-start w-100"
@@ -889,7 +896,7 @@ export default function AllDocTable() {
                   )}
                 </div>
               </div>
-              <div className="d-flex flex-column w-100">
+              <div className="d-flex flex-column flex-lg-row w-100">
                 <div className="col-12 col-lg-6 d-flex flex-column">
                   <div className="d-flex w-100 flex-column justify-content-center align-items-start p-1">
                     <div className="d-flex flex-column w-100 pt-3">
@@ -933,6 +940,31 @@ export default function AllDocTable() {
                     </div>
                   </div>
                 </div>
+                <div className="col-12 col-lg-6 d-flex flex-column justify-content-center">
+                  <div className="d-flex w-100 flex-column justify-content-center align-items-start p-1">
+                    <div className="d-flex flex-column w-100 pt-3">
+                      <p
+                        className="mb-1 text-start w-100"
+                        style={{ fontSize: "14px" }}
+                      >
+                        Select Expire Date
+                      </p>
+                      <label className="d-flex flex-column">
+                        <DatePicker
+                          showTime
+                          className={`w-100`}
+                          placeholder="Choose Expire Date"
+                          onChange={(value, dateString) => {
+                            setUserEndDate(`${dateString}`)
+                          }}
+                          onOk={(value) => onExpireDateTimeOk(value, value?.format('YYYY-MM-DD HH:mm:ss') ?? '')}
+                        />
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="d-flex flex-column flex-lg-row w-100">
                 <div className="col-12 col-lg-6 d-flex flex-column justify-content-center">
                   <label className="d-flex flex-row mt-3">
                     <Checkbox
